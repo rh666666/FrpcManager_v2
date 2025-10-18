@@ -1,6 +1,4 @@
-using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Nett;
 
@@ -20,10 +18,8 @@ namespace FrpcManagerCSharp
         {
             if (!File.Exists(_configPath))
             {
-                // 如果文件不存在，创建默认配置
-                var defaultConfig = CreateDefaultConfig();
-                SaveConfig(defaultConfig);
-                return defaultConfig;
+                // 如果文件不存在，抛出异常而不是自动创建
+                throw new FileNotFoundException($"配置文件不存在: {_configPath}");
             }
 
             try
@@ -149,26 +145,12 @@ namespace FrpcManagerCSharp
         // 创建默认配置文件
         public static TomlTable CreateDefaultConfig()
         {
-            // 修复：使用正确的创建方法
+            // 创建仅包含服务器配置的默认配置，不包含代理配置
             var config = Toml.Create();
             config.Add("serverAddr", "127.0.0.1");
             config.Add("serverPort", 7000);
             
-            // 修复：创建代理数组而不是表
-            // 使用 TomlObjectFactory.CreateEmptyAttachedTableArray 创建表数组
-            var proxyArray = TomlObjectFactory.CreateEmptyAttachedTableArray(config);
-            
-            var proxy = Toml.Create();
-            proxy.Add("name", "ssh");
-            proxy.Add("type", "tcp");
-            proxy.Add("localIP", "127.0.0.1");
-            proxy.Add("localPort", 22);
-            proxy.Add("remotePort", 6000);
-            
-            // 修复：将代理添加到数组而不是直接添加到配置
-            proxyArray.Add(proxy);
-            config.Add("proxies", proxyArray);
-            
+            // 不自动添加默认代理配置，让用户手动添加
             return config;
         }
 

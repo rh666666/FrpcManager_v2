@@ -4,12 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FrpcManagerCSharp"
+        xmlns:converters="clr-namespace:FrpcManagerCSharp.Converters"
         mc:Ignorable="d"
-        Title="Frpc管理器" Height="600" Width="800"
+        Title="Frpc管理器" Height="700" Width="900"
         WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:StatusColorConverter x:Key="StatusColorConverter"/>
+    </Window.Resources>
     
     <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -19,10 +27,37 @@
         <!-- 标题 -->
         <TextBlock Grid.Row="0" Text="Frpc客户端管理器" 
                    FontSize="24" FontWeight="Bold" 
-                   HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+        <!-- 配置文件管理区域 -->
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" 
+                CornerRadius="5" Margin="0,0,0,10" Background="#f5f5f5">
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <TextBlock Text="配置文件:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox ItemsSource="{Binding ConfigNames}" 
+                          SelectedItem="{Binding SelectedConfig}"
+                          Width="200" Height="30" Margin="0,0,10,0"/>
+                <Button Content="新建" Width="60" Height="30" Margin="5"
+                        Command="{Binding CreateConfigCommand}"
+                        Background="#28a745" Foreground="White"/>
+                <Button Content="重命名" Width="60" Height="30" Margin="5"
+                        Command="{Binding RenameConfigCommand}"
+                        Background="#ffc107" Foreground="Black"/>
+                <Button Content="删除" Width="60" Height="30" Margin="5"
+                        Command="{Binding DeleteConfigCommand}"
+                        Background="#dc3545" Foreground="White"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 配置摘要显示 -->
+        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" 
+                CornerRadius="5" Margin="0,0,0,10" Background="#f8f9fa">
+            <TextBlock Text="{Binding ConfigSummary}" 
+                       Margin="10" FontFamily="Consolas" FontSize="12"/>
+        </Border>
 
         <!-- 控制按钮区域 -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" 
+        <StackPanel Grid.Row="3" Orientation="Horizontal" 
                    HorizontalAlignment="Center" Margin="0,0,0,20">
             <Button Content="启动" Width="80" Height="35" Margin="5"
                     Command="{Binding StartCommand}"
@@ -42,7 +77,7 @@
         </StackPanel>
 
         <!-- 状态显示 -->
-        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="1" 
+        <Border Grid.Row="4" BorderBrush="Gray" BorderThickness="1" 
                 CornerRadius="5" Margin="0,0,0,10">
             <Grid>
                 <Grid.RowDefinitions>
@@ -60,21 +95,25 @@
                 </Border>
 
                 <!-- 日志显示 -->
-                <ScrollViewer Grid.Row="1" Margin="10">
-                    <TextBox Text="{Binding Logs, Converter={StaticResource ObservableCollectionToStringConverter}}"
-                             IsReadOnly="True"
-                             Background="White"
-                             FontFamily="Consolas"
-                             FontSize="12"
-                             ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                             ScrollViewer.VerticalScrollBarVisibility="Auto"
-                             TextWrapping="Wrap"/>
+                <ScrollViewer Grid.Row="1" Margin="10" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Logs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" 
+                                           FontFamily="Consolas" 
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Margin="0,2"
+                                           Background="LightYellow"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </ScrollViewer>
             </Grid>
         </Border>
 
         <!-- 底部信息 -->
-        <StatusBar Grid.Row="3">
+        <StatusBar Grid.Row="5">
             <StatusBarItem>
                 <TextBlock Text="Frpc客户端管理器 v1.0"/>
             </StatusBarItem>

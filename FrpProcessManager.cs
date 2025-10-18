@@ -1,16 +1,20 @@
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace FrpcManagerCSharp
 {
     public class FrpProcessManager(string frpcPath, string configPath, Action<string> logCallback, Action<string> statusCallback)
     {
         private readonly string _frpcPath = frpcPath;
-        private readonly string _configPath = configPath;
+        private string _configPath = configPath;
         private readonly Action<string> _logCallback = logCallback;
         private readonly Action<string> _statusCallback = statusCallback;
         private Process? _frpcProcess;
+
+        // 更新配置路径
+        public void UpdateConfigPath(string configPath)
+        {
+            _configPath = configPath;
+        }
 
         public bool IsRunning => _frpcProcess != null && !_frpcProcess.HasExited;
 
@@ -66,7 +70,7 @@ namespace FrpcManagerCSharp
                     if (!string.IsNullOrEmpty(e.Data))
                         _logCallback($"错误：{e.Data ?? string.Empty}");
                 };
-
+                
                 _frpcProcess.Start();
                 _frpcProcess.BeginOutputReadLine();
                 _frpcProcess.BeginErrorReadLine();
