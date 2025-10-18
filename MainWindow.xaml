@@ -88,7 +88,7 @@
                 <Button Content="新建" Width="65" Height="35"
                         Command="{Binding CreateConfigCommand}"
                         Background="#28a745" Foreground="White" FontWeight="Medium"/>
-                <Button Content="编辑配置" Width="90" Height="35"
+                <Button Content="编辑" Width="90" Height="35"
                         Command="{Binding EditConfigCommand}"
                         Background="#0078d4" Foreground="White" FontWeight="Medium"/>
                 <Button Content="重命名" Width="65" Height="35"

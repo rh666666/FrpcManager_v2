@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Collections.Specialized;
@@ -16,13 +17,30 @@ namespace FrpcManagerCSharp
             _viewModel = new MainWindowViewModel();
             this.DataContext = _viewModel;
             
+            // 设置窗口图标
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "app-icon.ico");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    this.Icon = new System.Windows.Media.Imaging.BitmapImage(new Uri(iconPath, UriKind.Absolute));
+                }
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                // 如果图标设置失败，记录错误但不影响程序运行
+                Console.WriteLine($"设置图标失败: {ex.Message}");
+#endif
+            }
+            
             // 订阅ScrollViewer的滚动事件
             LogScrollViewer.ScrollChanged += LogScrollViewer_ScrollChanged;
             
             // 直接订阅_viewModel.Logs的CollectionChanged事件
             if (_viewModel.Logs is INotifyCollectionChanged notifyCollection)
             {
-                notifyCollection.CollectionChanged += Logs_CollectionChanged;
+                notifyCollection.CollectionChanged += (sender, e) => Logs_CollectionChanged(sender ?? notifyCollection, e);
             }
             
             // 窗口关闭时的资源清理

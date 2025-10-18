@@ -8,11 +8,6 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <!-- 添加Microsoft.VisualBasic引用 -->
-  <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
@@ -20,10 +15,14 @@
   </ItemGroup>
 
   <!-- 添加frp目录打包配置 -->
+  <PropertyGroup>
+    <ApplicationIcon>Resources\app-icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Content Include="frp\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\app-icon.ico" />
   </ItemGroup>
 
 </Project>

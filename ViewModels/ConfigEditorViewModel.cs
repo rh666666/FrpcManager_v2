@@ -112,7 +112,7 @@ namespace FrpcManagerCSharp.ViewModels
                     catch (Exception ex)
                     {
                         // 如果代理配置加载失败，创建默认代理
-                        System.Diagnostics.Debug.WriteLine($"代理配置加载失败: {ex.Message}");
+                        Console.WriteLine($"代理配置加载失败: {ex.Message}");
                         CreateDefaultProxy();
                     }
                 }
