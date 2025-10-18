@@ -431,18 +431,6 @@ $RECYCLE.BIN/
 # Project Specific Files
 # =========================
 
-# FRP executable files (these should be downloaded separately)
-frp/frpc.exe
-frp/frps.exe
-
-# FRP configuration files (user-specific configurations)
-frp/frpc.toml
-frp/frps.toml
-
-# Documentation directories
-Nett-docs/
-frp-doc/
-
 # Local development files
 *.local
 *.local.*
