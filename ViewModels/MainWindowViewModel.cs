@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace FrpcManagerCSharp.ViewModels
 {
-    public partial class MainWindowViewModel : ObservableObject
+    public partial class MainWindowViewModel : ObservableObject, IDisposable
     {
         [ObservableProperty]
         private string _status = "未运行";
@@ -321,6 +321,54 @@ namespace FrpcManagerCSharp.ViewModels
                 Status = status;
                 IsRunning = status == "运行中";
             });
+        }
+        
+        // 添加Dispose方法实现IDisposable接口
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // 异步停止frpc进程
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        if (_frpManager?.IsRunning == true)
+                        {
+                            AddLog("程序退出，正在停止frpc进程...");
+                            _frpManager.Stop();
+                            
+                            // 等待进程完全停止，最多等待3秒
+                            await Task.Delay(3000);
+                            
+                            if (_frpManager?.IsRunning == false)
+                            {
+                                AddLog("frpc进程已成功停止");
+                            }
+                            else
+                            {
+                                AddLog("警告: frpc进程停止超时，进程可能仍在运行");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        AddLog($"停止frpc进程时发生错误: {ex.Message}");
+                    }
+                });
+            }
+        }
+        
+        // 添加析构函数作为额外保障
+        ~MainWindowViewModel()
+        {
+            Dispose(false);
         }
     }
 }

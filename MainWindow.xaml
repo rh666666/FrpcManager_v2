@@ -7,11 +7,55 @@
         xmlns:converters="clr-namespace:FrpcManagerCSharp.Converters"
         mc:Ignorable="d"
         Title="Frpc管理器" Height="700" Width="900"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Background="#f0f2f5">
     
     <Window.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <converters:StatusColorConverter x:Key="StatusColorConverter"/>
+        <DropShadowEffect x:Key="DropShadowEffect" ShadowDepth="2" BlurRadius="3" Opacity="0.2" Direction="315"/>
+        <Style TargetType="Button">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.9"/>
+                                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource Self}, Path=Background}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.8"/>
+                                <Setter Property="RenderTransform">
+                                    <Setter.Value>
+                                        <TranslateTransform X="1" Y="1"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     
     <Grid Margin="10">
@@ -27,58 +71,66 @@
         <!-- 标题 -->
         <TextBlock Grid.Row="0" Text="Frpc客户端管理器" 
                    FontSize="24" FontWeight="Bold" 
-                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                   HorizontalAlignment="Center" Margin="0,10,0,20"
+                   Foreground="#333333"/>
 
         <!-- 配置文件管理区域 -->
-        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" 
-                CornerRadius="5" Margin="0,0,0,10" Background="#f5f5f5">
-            <StackPanel Orientation="Horizontal" Margin="10">
-                <TextBlock Text="配置文件:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+        <Border Grid.Row="1" BorderBrush="#e0e0e0" BorderThickness="1" 
+                CornerRadius="6" Margin="0,0,0,15" Background="White" 
+                Effect="{StaticResource DropShadowEffect}">
+            <StackPanel Orientation="Horizontal" Margin="15" VerticalAlignment="Center">
+                <TextBlock Text="配置文件:" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0" 
+                           Foreground="#333333"/>
                 <ComboBox ItemsSource="{Binding ConfigNames}" 
                           SelectedItem="{Binding SelectedConfig}"
-                          Width="200" Height="30" Margin="0,0,10,0"/>
-                <Button Content="新建" Width="60" Height="30" Margin="5"
+                          Width="200" Height="35" Margin="0,0,15,0"
+                          VerticalContentAlignment="Center" Background="#f8f9fa" BorderBrush="#ddd"/>
+                <Button Content="新建" Width="65" Height="35"
                         Command="{Binding CreateConfigCommand}"
-                        Background="#28a745" Foreground="White"/>
-                <Button Content="重命名" Width="60" Height="30" Margin="5"
+                        Background="#28a745" Foreground="White" FontWeight="Medium"/>
+                <Button Content="编辑配置" Width="90" Height="35"
+                        Command="{Binding EditConfigCommand}"
+                        Background="#0078d4" Foreground="White" FontWeight="Medium"/>
+                <Button Content="重命名" Width="65" Height="35"
                         Command="{Binding RenameConfigCommand}"
-                        Background="#ffc107" Foreground="Black"/>
-                <Button Content="删除" Width="60" Height="30" Margin="5"
+                        Background="#ffc107" Foreground="Black" FontWeight="Medium"/>
+                <Button Content="删除" Width="65" Height="35"
                         Command="{Binding DeleteConfigCommand}"
-                        Background="#dc3545" Foreground="White"/>
+                        Background="#dc3545" Foreground="White" FontWeight="Medium"/>
             </StackPanel>
         </Border>
 
         <!-- 配置摘要显示 -->
-        <Border Grid.Row="2" BorderBrush="LightGray" BorderThickness="1" 
-                CornerRadius="5" Margin="0,0,0,10" Background="#f8f9fa">
+        <Border Grid.Row="2" BorderBrush="#e0e0e0" BorderThickness="1" 
+                CornerRadius="6" Margin="0,0,0,15" Background="White"
+                Effect="{StaticResource DropShadowEffect}">
             <TextBlock Text="{Binding ConfigSummary}" 
-                       Margin="10" FontFamily="Consolas" FontSize="12"/>
+                       Margin="15" FontFamily="Consolas" FontSize="12" 
+                       Foreground="#444444"/>
         </Border>
 
         <!-- 控制按钮区域 -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" 
                    HorizontalAlignment="Center" Margin="0,0,0,20">
-            <Button Content="启动" Width="80" Height="35" Margin="5"
+            <Button Content="启动" Width="90" Height="40"
                     Command="{Binding StartCommand}"
-                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"/>
+                    IsEnabled="{Binding IsRunning, Converter={StaticResource InverseBooleanConverter}}"
+                    Background="#17a2b8" Foreground="White" FontWeight="Medium"/>
             
-            <Button Content="停止" Width="80" Height="35" Margin="5"
+            <Button Content="停止" Width="90" Height="40"
                     Command="{Binding StopCommand}"
-                    IsEnabled="{Binding IsRunning}"/>
+                    IsEnabled="{Binding IsRunning}"
+                    Background="#6c757d" Foreground="White" FontWeight="Medium"/>
             
-            <Button Content="重启" Width="80" Height="35" Margin="5"
-                    Command="{Binding RestartCommand}"/>
-            
-            <Button Content="编辑配置" Width="90" Height="35" Margin="5"
-                    Command="{Binding EditConfigCommand}"
-                    Background="#0078d4" Foreground="White"
-                    Padding="15,8" FontWeight="SemiBold"/>
+            <Button Content="重启" Width="90" Height="40"
+                    Command="{Binding RestartCommand}"
+                    Background="#6f42c1" Foreground="White" FontWeight="Medium"/>
         </StackPanel>
 
         <!-- 状态显示 -->
-        <Border Grid.Row="4" BorderBrush="Gray" BorderThickness="1" 
-                CornerRadius="5" Margin="0,0,0,10">
+        <Border Grid.Row="4" BorderBrush="#e0e0e0" BorderThickness="1" 
+                CornerRadius="6" Margin="0,0,0,15" Background="White"
+                Effect="{StaticResource DropShadowEffect}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -86,25 +138,28 @@
                 </Grid.RowDefinitions>
 
                 <!-- 状态栏 -->
-                <Border Grid.Row="0" Background="LightGray" CornerRadius="5,5,0,0">
-                    <StackPanel Orientation="Horizontal" Margin="10,5">
-                        <TextBlock Text="状态: " FontWeight="Bold"/>
+                <Border Grid.Row="0" Background="#f8f9fa" CornerRadius="6,6,0,0" Padding="15,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="状态: " FontWeight="Bold" Foreground="#333333"/>
                         <TextBlock Text="{Binding Status}" 
-                                  Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"/>
+                                  Foreground="{Binding Status, Converter={StaticResource StatusColorConverter}}"
+                                  FontWeight="Medium"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 日志显示 -->
-                <ScrollViewer Grid.Row="1" Margin="10" VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Logs}">
+                <ScrollViewer x:Name="LogScrollViewer" Grid.Row="1" Margin="15" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="LogsItemsControl" ItemsSource="{Binding Logs}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}" 
                                            FontFamily="Consolas" 
-                                           FontSize="12"
-                                           TextWrapping="Wrap"
-                                           Margin="0,2"
-                                           Background="LightYellow"/>
+                                           FontSize="12" 
+                                           TextWrapping="Wrap" 
+                                           Margin="0,2" 
+                                           Padding="5" 
+                                           Background="#f8f9fa" 
+                                           Foreground="#333333"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -113,12 +168,12 @@
         </Border>
 
         <!-- 底部信息 -->
-        <StatusBar Grid.Row="5">
+        <StatusBar Grid.Row="5" Background="#f8f9fa" BorderThickness="1,1,0,0" BorderBrush="#e0e0e0">
             <StatusBarItem>
-                <TextBlock Text="Frpc客户端管理器 v1.0"/>
+                <TextBlock Text="Frpc客户端管理器 v1.0" Foreground="#666666"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock Text="{Binding DateTime.Now, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"/>
+                <TextBlock Text="{Binding DateTime.Now, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" Foreground="#666666"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
