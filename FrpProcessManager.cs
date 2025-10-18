@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace FrpcManagerCSharp
 {
@@ -17,6 +18,14 @@ namespace FrpcManagerCSharp
         }
 
         public bool IsRunning => _frpcProcess != null && !_frpcProcess.HasExited;
+        
+        // 移除ANSI转义序列的方法
+        private string RemoveAnsiEscapeCodes(string input)
+        {
+            // 正则表达式匹配ANSI转义序列
+            string ansiPattern = @"\u001b\[[\d;]*[a-zA-Z]"; // 匹配形如[0m[1;33m这样的ANSI颜色代码
+            return Regex.Replace(input, ansiPattern, string.Empty);
+        }
 
         // 启动 frpc 进程
         public void Start()
@@ -62,13 +71,21 @@ namespace FrpcManagerCSharp
                 _frpcProcess.OutputDataReceived += (s, e) =>
                 {
                     if (!string.IsNullOrEmpty(e.Data))
-                        _logCallback(e.Data ?? string.Empty);
+                    {
+                        // 清理ANSI颜色代码
+                        string cleanData = RemoveAnsiEscapeCodes(e.Data ?? string.Empty);
+                        _logCallback(cleanData);
+                    }
                 };
                 
                 _frpcProcess.ErrorDataReceived += (s, e) =>
                 {
                     if (!string.IsNullOrEmpty(e.Data))
-                        _logCallback($"错误：{e.Data ?? string.Empty}");
+                    {
+                        // 清理ANSI颜色代码
+                        string cleanData = RemoveAnsiEscapeCodes(e.Data ?? string.Empty);
+                        _logCallback($"错误：{cleanData}");
+                    }
                 };
                 
                 _frpcProcess.Start();

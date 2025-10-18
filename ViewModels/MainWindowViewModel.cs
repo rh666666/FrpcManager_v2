@@ -286,7 +286,19 @@ namespace FrpcManagerCSharp.ViewModels
 
         private void AddLog(string message)
         {
-            var logMessage = $"[{DateTime.Now:HH:mm:ss}] {message}";
+            string logMessage;
+            
+            // 检查消息是否已经包含时间戳格式（形如 2025-10-18 17:23:21.867）
+            if (System.Text.RegularExpressions.Regex.IsMatch(message, @"\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\.\d{3}"))
+            {
+                // 对于已经包含详细时间戳的frpc日志，只添加方括号
+                logMessage = message;
+            }
+            else
+            {
+                // 对于自定义消息，添加时间戳
+                logMessage = $"[{DateTime.Now:HH:mm:ss}] {message}";
+            }
             
 #if DEBUG
             // 仅在Debug模式下输出到控制台进行调试
